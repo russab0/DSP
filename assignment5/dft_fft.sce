@@ -1,9 +1,9 @@
 /*
     PREPARATION
 */
-clear()
-BASE = "/home/sabzirov/Desktop/Spring20/DSP/assignment5/"
-rand('seed', 15)
+clear();
+BASE = "/home/sabzirov/Desktop/Spring20/DSP/assignment5/";
+rand('seed', 15);
 
 
 /*
@@ -11,12 +11,12 @@ rand('seed', 15)
     Implement your function for DFT in SciLab. Verify your functions
 */
 
-DFT_MIN_SIZE = 8
+DFT_MIN_SIZE = 8;
 
 function X = my_dft(x, inverse)
-    N = length(x)
+    N = length(x);
     if ~exists("inverse","local") then
-        inverse = %F // false
+        inverse = %F; // false
     end
     /*X = zeros(N)
     for k = 1:N
@@ -25,19 +25,19 @@ function X = my_dft(x, inverse)
             X(k) = X(k) + x(n) * exp(-2 * %i * %pi * n * k / N)
         end
     end*/
-    n = 0:N-1 // list of integers from range [0; N)
-    k = matrix(n, N, 1)  // each number is located on separate row
+    n = 0:N-1; // list of integers from range [0; N)
+    k = matrix(n, N, 1);  // each number is located on separate row
     if ~inverse then
-        w = exp(-2 * %i * %pi * k * n / N)
+        w = exp(-2 * %i * %pi * k * n / N);
     else
-        w = exp(+2 * %i * %pi * k * n / N)
+        w = exp(+2 * %i * %pi * k * n / N);
     end
     
-    ans = zeros(N, 1)
+    ans = zeros(N, 1);
     for i = 1:N
-        ans(i) = sum(w(i, :) .* x) // multiplication on two matrices
+        ans(i) = sum(w(i, :) .* x); // multiplication on two matrices
     end 
-    X = ans
+    X = ans;
 endfunction
 
 
@@ -82,62 +82,21 @@ endfunction
 endfunction*/
 
 function X = my_fft(x)
-  N = length(x)
+  N = length(x);
   
   if (N <= 1) then
-    X = x
+    X = x;
   elseif (modulo(N,2)>0) then
-        error('We assert signal length to be a power of 2 | N!=2^M')
+        error('N should be a power of 2');
   else
-    X_even = my_fft(x(1:2:$)) 
-    X_odd = my_fft(x(2:2:$))
+      X_even = my_fft(x(1:2:$));
+      X_odd = my_fft(x(2:2:$));
     
-    k = [0:1:N/2-1]
-    factor = exp(k .* (-2*%i*%pi/N))
-    factor = factor .* X_odd
+      k = [0:1:N/2-1];
+      factor = exp(k .* (-2*%i*%pi/N));
+      factor = factor .* X_odd;
    
-    X = [X_even + factor, X_even - factor]
+      X = [X_even + factor, X_even - factor];
   end
 endfunction
 
-s=[1,2,3,4,5] 
-s=rand(1, 1024, 'norm') .* 100
-s_len = length(s)
-frequencies = (0:s_len-1)/s_len;
-
-figure(2)
-f = scf();  clf(); 
-f.figure_size=[1000, 800]
-subplot(221)
-plot2d("nl", frequencies, abs(fft(s)), color("blue"))
-xlabel("Frequency component, n", 'fontsize', 2)
-ylabel("Freq Amplitude", 'fontsize', 2)
-title("Signal in frequency domain (build-in FFT)", 'fontsize', 3)
-
-
-subplot(222)
-q = abs(my_dft(s))
-plot2d("nl", frequencies, q, color("red"))
-xlabel("Frequency component, n", 'fontsize', 2)
-ylabel("Freq Amplitude", 'fontsize', 2)
-title("Signal in frequency domain (my own DFT)", 'fontsize', 3)
-
-
-
-subplot(223)
-plot2d("nl", frequencies, abs(fft(s)), color("blue"))
-xlabel("Frequency component, n", 'fontsize', 2)
-ylabel("Freq Amplitude", 'fontsize', 2)
-title("Signal in frequency domain (build-in FFT)", 'fontsize', 3)
-
-
-
-subplot(224)
-q = abs(my_fft(s))
-plot2d("nl", frequencies, q, color("violet"))
-xlabel("Frequency component, n", 'fontsize', 2)
-ylabel("Freq Amplitude", 'fontsize', 2)
-title("Signal in frequency domain (my own FFT)", 'fontsize', 3)
-
-xs2png(gcf(), BASE + "dft_fft")
-close() // close immediately after saving
